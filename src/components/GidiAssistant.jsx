@@ -10,11 +10,47 @@ export function GidiAssistant() {
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   
+  // Interactive File Upload refs and state
+  const fileInputRef = useRef(null);
+  const [attachedFile, setAttachedFile] = useState(null);
+
+  // Voice recording simulation state
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(3);
+  
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
+
+  // Voice recording timer effect
+  useEffect(() => {
+    let interval = null;
+    if (isRecording) {
+      setRecordingSeconds(3);
+      interval = setInterval(() => {
+        setRecordingSeconds(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setIsRecording(false);
+            
+            // Populates input box with a simulated query
+            const voiceQueries = [
+              "Show me the status of the network nodes",
+              "Tell me about Quantum 6G Security",
+              "How do I log in to the SaaS dashboard"
+            ];
+            const randomQuery = voiceQueries[Math.floor(Math.random() * voiceQueries.length)];
+            setInputValue(randomQuery);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isRecording]);
 
   const presetQuestions = [
     'What is YOFS?',
@@ -70,17 +106,40 @@ export function GidiAssistant() {
   };
 
   const handleSend = (textToSend) => {
-    if (!textToSend.trim()) return;
+    if (!textToSend.trim() && !attachedFile) return;
+
+    const filePayload = attachedFile ? { ...attachedFile } : null;
+    setAttachedFile(null); // Clear attachment state
 
     // Add user message
-    const userMsg = { id: Date.now(), type: 'user', text: textToSend };
+    const userMsg = { 
+      id: Date.now(), 
+      type: 'user', 
+      text: textToSend || `Uploaded file: ${filePayload.name}`,
+      file: filePayload 
+    };
+    
     setMessages(prev => [...prev, userMsg]);
     setInputValue('');
     setIsTyping(true);
 
     // Simulate bot latency (typing indicator)
     setTimeout(() => {
-      const responseText = getBotResponse(textToSend);
+      let responseText = '';
+      
+      if (filePayload) {
+        const ext = filePayload.name.split('.').pop().toLowerCase();
+        if (['json', 'yaml', 'yml', 'txt', 'csv'].includes(ext)) {
+          responseText = `Ingestion complete for file: "${filePayload.name}". Core parsing indicates normal system telemetry logs (load factor: 42%, active threads: 120). No routing packet drop logs found.`;
+        } else if (['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext)) {
+          responseText = `Image payload processed: "${filePayload.name}". Optical density and fiber refraction mapping match nominal spectrum index levels.`;
+        } else {
+          responseText = `Ingestion successful for "${filePayload.name}" (${(filePayload.size / 1024).toFixed(1)} KB). Mapped variables successfully updated inside your regional cluster variables config.`;
+        }
+      } else {
+        responseText = getBotResponse(textToSend);
+      }
+      
       const botMsg = { id: Date.now() + 1, type: 'bot', text: responseText };
       setIsTyping(false);
       setMessages(prev => [...prev, botMsg]);
@@ -93,8 +152,36 @@ export function GidiAssistant() {
     }
   };
 
+  const handleFileClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAttachedFile({
+        name: file.name,
+        size: file.size
+      });
+    }
+    // reset target value so same file can be selected again if removed
+    e.target.value = '';
+  };
+
+  const triggerVoiceRecord = () => {
+    setIsRecording(true);
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-50 font-sans">
+      {/* Hidden file input */}
+      <input 
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       {/* Floating Action Button */}
       <motion.button
         whileHover={{ scale: 1.08 }}
@@ -147,9 +234,9 @@ export function GidiAssistant() {
                 <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`flex gap-3 max-w-[85%] ${msg.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs shrink-0 ${
-                      msg.type === 'user' 
-                        ? 'bg-yofs-cyan/20 text-yofs-cyan border border-yofs-cyan/30' 
-                        : 'bg-yofs-purple/20 text-yofs-purple border border-yofs-purple/30'
+                       msg.type === 'user' 
+                         ? 'bg-yofs-cyan/20 text-yofs-cyan border border-yofs-cyan/30' 
+                         : 'bg-yofs-purple/20 text-yofs-purple border border-yofs-purple/30'
                     }`}>
                       {msg.type === 'user' ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
                     </div>
@@ -159,6 +246,16 @@ export function GidiAssistant() {
                         : 'bg-yofs-navy/80 border border-yofs-lightnavy text-yofs-lightslate rounded-tl-none'
                     }`}>
                       {msg.text}
+                      {/* Attached file bubble presentation */}
+                      {msg.file && (
+                        <div className="mt-2 p-2 bg-yofs-dark/60 rounded-lg border border-yofs-cyan/20 flex items-center gap-2 text-xs">
+                          <Paperclip className="w-3.5 h-3.5 text-yofs-cyan shrink-0" />
+                          <div className="truncate">
+                            <span className="block font-semibold text-white truncate max-w-[150px]">{msg.file.name}</span>
+                            <span className="block text-[9px] text-yofs-slate">{(msg.file.size / 1024).toFixed(1)} KB</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -199,43 +296,90 @@ export function GidiAssistant() {
               </div>
             )}
 
-            {/* Input Box */}
-            <div className="p-4 bg-yofs-navy/80 border-t border-yofs-cyan/15 flex items-center gap-3">
-              {/* File attach placeholder */}
-              <button 
-                onClick={() => alert('File upload UI trigger simulated. (Placeholder hook)')}
-                className="w-8 h-8 rounded-lg border border-yofs-lightnavy text-yofs-slate hover:text-yofs-cyan flex items-center justify-center transition-colors"
-                title="Attach network file"
-              >
-                <Paperclip className="w-4 h-4" />
-              </button>
+            {/* File Attachment Chip Area (Shows above Input Box) */}
+            {attachedFile && (
+              <div className="px-4 py-2 bg-[#0A1424] border-t border-yofs-cyan/15 flex items-center justify-between gap-3 animate-fade-in">
+                <div className="flex items-center gap-2 text-xs text-yofs-cyan bg-yofs-cyan/10 px-2.5 py-1.5 rounded-lg border border-yofs-cyan/20 truncate">
+                  <Paperclip className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate max-w-[200px] font-semibold">{attachedFile.name}</span>
+                  <span className="text-[10px] text-yofs-slate">({(attachedFile.size / 1024).toFixed(1)} KB)</span>
+                </div>
+                <button 
+                  onClick={() => setAttachedFile(null)}
+                  className="text-yofs-slate hover:text-red-400 p-1 transition-colors"
+                  title="Remove attachment"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
 
-              <input
-                type="text"
-                placeholder="Ask GIDI..."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyPress}
-                className="flex-1 bg-yofs-dark/50 border border-yofs-lightnavy focus:border-yofs-cyan focus:outline-none rounded-lg px-3 py-2 text-sm text-white placeholder:text-yofs-slate transition-colors"
-              />
+            {/* Input Box Area */}
+            {isRecording ? (
+              <div className="p-4 bg-yofs-navy/95 border-t border-red-500/30 flex items-center justify-between gap-3 animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+                  <span className="text-xs text-red-400 font-semibold uppercase tracking-wider">Listening...</span>
+                </div>
+                
+                {/* Voice bar bouncing waves */}
+                <div className="flex items-end gap-1 h-6">
+                  <div className="w-1 h-3 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <div className="w-1 h-5 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <div className="w-1 h-6 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="w-1 h-4 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '450ms' }} />
+                  <div className="w-1 h-2 bg-red-400 rounded-full animate-bounce" style={{ animationDelay: '600ms' }} />
+                </div>
 
-              {/* Voice input placeholder */}
-              <button 
-                onClick={() => alert('Voice input service initiated. Listening... (Placeholder hook)')}
-                className="w-8 h-8 rounded-lg border border-yofs-lightnavy text-yofs-slate hover:text-yofs-cyan flex items-center justify-center transition-colors"
-                title="Voice input"
-              >
-                <Mic className="w-4 h-4" />
-              </button>
+                <div className="text-xs font-mono text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
+                  0:0{recordingSeconds}
+                </div>
+                
+                <button 
+                  onClick={() => setIsRecording(false)} 
+                  className="text-[10px] px-2 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold border border-red-500/20 hover:border-red-500/40 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="p-4 bg-yofs-navy/80 border-t border-yofs-cyan/15 flex items-center gap-3">
+                {/* File attach button */}
+                <button 
+                  onClick={handleFileClick}
+                  className="w-8 h-8 rounded-lg border border-yofs-lightnavy text-yofs-slate hover:text-yofs-cyan flex items-center justify-center transition-colors shrink-0"
+                  title="Attach network file"
+                >
+                  <Paperclip className="w-4 h-4" />
+                </button>
 
-              <button
-                onClick={() => handleSend(inputValue)}
-                className="w-8 h-8 rounded-lg btn-gradient flex items-center justify-center text-white"
-                title="Send query"
-              >
-                <Send className="w-3.5 h-3.5" />
-              </button>
-            </div>
+                <input
+                  type="text"
+                  placeholder="Ask GIDI..."
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  className="flex-1 bg-yofs-dark/50 border border-yofs-lightnavy focus:border-yofs-cyan focus:outline-none rounded-lg px-3 py-2 text-sm text-white placeholder:text-yofs-slate transition-colors min-w-0"
+                />
+
+                {/* Voice input button */}
+                <button 
+                  onClick={triggerVoiceRecord}
+                  className="w-8 h-8 rounded-lg border border-yofs-lightnavy text-yofs-slate hover:text-yofs-cyan flex items-center justify-center transition-colors shrink-0"
+                  title="Voice input"
+                >
+                  <Mic className="w-4 h-4" />
+                </button>
+
+                <button
+                  onClick={() => handleSend(inputValue)}
+                  className="w-8 h-8 rounded-lg btn-gradient flex items-center justify-center text-white shrink-0"
+                  title="Send query"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
