@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 // Live Emoji AI Agent Avatar representing GIDI
 function GidiLiveAvatar({ size = 'md' }) {
   const containerSize = size === 'sm' ? 'w-8 h-8' : 'w-10 h-10';
-  const emojiSize = size === 'sm' ? 'text-sm' : 'text-lg';
+  const imgSize = size === 'sm' ? 'w-6 h-6' : 'w-8 h-8';
   
   return (
     <div className={`relative ${containerSize} rounded-full bg-gradient-to-tr from-yofs-cyan/20 to-yofs-purple/20 border border-yofs-cyan/35 flex items-center justify-center shadow-lg shadow-yofs-cyan/10 shrink-0 group`}>
@@ -13,10 +13,13 @@ function GidiLiveAvatar({ size = 'md' }) {
       <span className="absolute inset-0 rounded-full bg-yofs-cyan/25 animate-ping opacity-60 pointer-events-none" style={{ animationDuration: '3s' }} />
       {/* Online indicator dot */}
       <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-emerald-500 border border-[#0A1424] shadow-md" />
-      {/* Bobbing chatbot emoji */}
-      <span className={`animate-bounce ${emojiSize}`} style={{ animationDuration: '2.5s', display: 'inline-block' }}>
-        🤖
-      </span>
+      {/* Smiling Customer Service Avatar Image */}
+      <img 
+        src="/gidi-avatar.png" 
+        alt="GIDI AI Customer Agent" 
+        className={`${imgSize} rounded-full object-contain animate-bounce`} 
+        style={{ animationDuration: '2.5s' }}
+      />
     </div>
   );
 }
