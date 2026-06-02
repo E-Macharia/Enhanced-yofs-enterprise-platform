@@ -234,7 +234,7 @@ export function GidiAssistant() {
                 <GidiLiveAvatar size="md" />
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-                    GIDI AI
+                    GIDI Customer Support
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   </h3>
                   <span className="text-[10px] text-yofs-slate uppercase tracking-wider">Telecom & AI Co-Pilot</span>
