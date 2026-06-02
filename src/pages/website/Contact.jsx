@@ -70,7 +70,11 @@ export function Contact() {
                 <Mail className="w-5 h-5 text-yofs-cyan shrink-0 mt-0.5" />
                 <div>
                   <span className="block text-[10px] text-slate-500 dark:text-yofs-slate uppercase tracking-wider">Email Transit</span>
-                  <span className="text-sm font-semibold text-slate-800 dark:text-white">architect@yofs.com</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-white">
+                    <a href="mailto:yourownfuturesolution@gmail.com" className="hover:text-yofs-cyan transition-colors">
+                      yourownfuturesolution@gmail.com
+                    </a>
+                  </span>
                 </div>
               </div>
 
@@ -78,7 +82,12 @@ export function Contact() {
                 <Phone className="w-5 h-5 text-yofs-cyan shrink-0 mt-0.5" />
                 <div>
                   <span className="block text-[10px] text-slate-500 dark:text-yofs-slate uppercase tracking-wider">Vocal Link</span>
-                  <span className="text-sm font-semibold text-slate-800 dark:text-white">+1 (555) 606-YOFS</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-white">
+                    <a href="tel:+254790344795" className="hover:text-yofs-cyan transition-colors">
+                      +254790344795
+                    </a>
+                    {" - YOFS"}
+                  </span>
                 </div>
               </div>
 
@@ -86,7 +95,9 @@ export function Contact() {
                 <MapPin className="w-5 h-5 text-yofs-cyan shrink-0 mt-0.5" />
                 <div>
                   <span className="block text-[10px] text-slate-500 dark:text-yofs-slate uppercase tracking-wider">Physical Junction</span>
-                  <span className="text-sm font-semibold text-slate-800 dark:text-white">Quantum Tower Suite 42,<br />Silicon Heights, CA</span>
+                  <span className="text-sm font-semibold text-slate-800 dark:text-white">
+                    Museum Hill 69 Kipande Rd
+                  </span>
                 </div>
               </div>
             </div>
