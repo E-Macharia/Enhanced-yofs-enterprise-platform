@@ -18,9 +18,9 @@ export function GidiAssistant() {
 
   const presetQuestions = [
     'What is YOFS?',
-    'Is the network online?',
-    'How do I log in?',
-    'What services are available?'
+    'What technology do you use?',
+    'Tell me about Quantum 6G Security',
+    'How do I log in?'
   ];
 
   const getBotResponse = (text) => {
@@ -28,6 +28,26 @@ export function GidiAssistant() {
     
     if (query.includes('what is yofs') || query.includes('who are you') || query.includes('company')) {
       return "YOFS is a futuristic digital transformation company blending Cognitive AI Cloud architectures with secure, quantum-encrypted 6G telecommunications infrastructure.";
+    }
+
+    if (query.includes('technology') || query.includes('tech stack') || query.includes('how does it work') || query.includes('behind') || query.includes('substrate')) {
+      return "YOFS operates on four pillars: (1) Quantum 6G Fiber Optics, (2) Cognitive AI Cloud routing, (3) Decentralized Edge Mesh computing clusters, and (4) Real-time Industrial Digital Twins. We weave neural processing directly into the networking layer.";
+    }
+
+    if (query.includes('6g') || query.includes('quantum') || query.includes('fiber') || query.includes('encryption') || query.includes('security') || query.includes('cryptography')) {
+      return "Our physical lines utilize Dense Wavelength Division Multiplexing (DWDM) fiber optic cabling. For security, we layer on Quantum Key Distribution (QKD) protocols. Because intercepting quantum states collapses the data, our communication pipelines are completely impervious to eavesdropping.";
+    }
+
+    if (query.includes('ai') || query.includes('artificial intelligence') || query.includes('cognitive') || query.includes('neural') || query.includes('agent')) {
+      return "We integrate custom Cognitive Neural Processors (CNPs) inside our datacenter hubs. These host autonomous AI agents that monitor telemetric signals, perform proactive load balances, and block security threats before they affect client systems.";
+    }
+
+    if (query.includes('edge') || query.includes('mesh') || query.includes('nodes') || query.includes('latency')) {
+      return "Our Distributed Edge Mesh uses localized node networks (like Node Tokyo-42 or Frankfurt-1) to cache and process telemetry close to devices. By reducing the reliance on central data hubs, we achieve roundtrip speeds below 1 millisecond.";
+    }
+
+    if (query.includes('digital twin') || query.includes('twins') || query.includes('telemetry') || query.includes('virtualization')) {
+      return "Industrial Digital Twins construct virtual, high-fidelity real-time models of physical logistics, shipping channels, and telecommunications clusters, letting operators test failover scenarios without risk.";
     }
     
     if (query.includes('network') || query.includes('status') || query.includes('online') || query.includes('downtime')) {
@@ -46,7 +66,7 @@ export function GidiAssistant() {
       return "Our enterprise subscription tiers start at $4,999/month, incorporating dedicated satellite bandwidth allocations and customized SLA guarantees.";
     }
 
-    return "Thank you for that request. I am simulated to process information relating to YOFS network clusters, SaaS features, and credentials. Try asking about our 'network status' or 'login credentials'.";
+    return "Thank you for that request. I can explain the tech behind YOFS (like Quantum 6G Fiber, Edge Mesh, and Cognitive AI Clouds) as well as live network diagnostics. Try asking 'what technology do you use?' or 'how does quantum security work?'.";
   };
 
   const handleSend = (textToSend) => {
