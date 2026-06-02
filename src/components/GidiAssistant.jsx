@@ -2,6 +2,25 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, Paperclip, Mic, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Live Emoji AI Agent Avatar representing GIDI
+function GidiLiveAvatar({ size = 'md' }) {
+  const containerSize = size === 'sm' ? 'w-8 h-8' : 'w-10 h-10';
+  const emojiSize = size === 'sm' ? 'text-sm' : 'text-lg';
+  
+  return (
+    <div className={`relative ${containerSize} rounded-full bg-gradient-to-tr from-yofs-cyan/20 to-yofs-purple/20 border border-yofs-cyan/35 flex items-center justify-center shadow-lg shadow-yofs-cyan/10 shrink-0 group`}>
+      {/* Pulsing glow ring backdrop */}
+      <span className="absolute inset-0 rounded-full bg-yofs-cyan/25 animate-ping opacity-60 pointer-events-none" style={{ animationDuration: '3s' }} />
+      {/* Online indicator dot */}
+      <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-emerald-500 border border-[#0A1424] shadow-md" />
+      {/* Bobbing chatbot emoji */}
+      <span className={`animate-bounce ${emojiSize}`} style={{ animationDuration: '2.5s', display: 'inline-block' }}>
+        🤖
+      </span>
+    </div>
+  );
+}
+
 export function GidiAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -209,9 +228,7 @@ export function GidiAssistant() {
             {/* Header */}
             <div className="p-4 bg-gradient-to-r from-yofs-navy to-yofs-lightnavy border-b border-yofs-cyan/15 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-yofs-cyan/10 border border-yofs-cyan/30 flex items-center justify-center text-yofs-cyan">
-                  <Bot className="w-5 h-5" />
-                </div>
+                <GidiLiveAvatar size="md" />
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
                     GIDI AI
@@ -233,13 +250,13 @@ export function GidiAssistant() {
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`flex gap-3 max-w-[85%] ${msg.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs shrink-0 ${
-                       msg.type === 'user' 
-                         ? 'bg-yofs-cyan/20 text-yofs-cyan border border-yofs-cyan/30' 
-                         : 'bg-yofs-purple/20 text-yofs-purple border border-yofs-purple/30'
-                    }`}>
-                      {msg.type === 'user' ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
-                    </div>
+                    {msg.type === 'user' ? (
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs shrink-0 bg-yofs-cyan/20 text-yofs-cyan border border-yofs-cyan/30">
+                        <User className="w-3.5 h-3.5" />
+                      </div>
+                    ) : (
+                      <GidiLiveAvatar size="sm" />
+                    )}
                     <div className={`rounded-2xl px-5 py-3 text-sm leading-relaxed ${
                       msg.type === 'user'
                         ? 'bg-gradient-to-r from-yofs-cyan/20 to-yofs-cyan/10 border border-yofs-cyan/30 text-white rounded-tr-none'
@@ -264,9 +281,7 @@ export function GidiAssistant() {
               {isTyping && (
                 <div className="flex justify-start">
                   <div className="flex gap-2 max-w-[85%]">
-                    <div className="w-7 h-7 rounded-full bg-yofs-purple/20 border border-yofs-purple/30 text-yofs-purple flex items-center justify-center shrink-0">
-                      <Bot className="w-3.5 h-3.5" />
-                    </div>
+                    <GidiLiveAvatar size="sm" />
                     <div className="bg-yofs-navy/80 border border-yofs-lightnavy rounded-2xl rounded-tl-none px-4 py-3 flex gap-1 items-center">
                       <span className="w-2 h-2 rounded-full bg-yofs-cyan animate-bounce" style={{ animationDelay: '0ms' }} />
                       <span className="w-2 h-2 rounded-full bg-yofs-cyan animate-bounce" style={{ animationDelay: '150ms' }} />
